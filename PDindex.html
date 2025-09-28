@@ -1,79 +1,48 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>飛ぶ灯籠 AR | 起動成功バージョン (最終安定版)</title>
-    <!-- 安定性が最も高いAR.jsの公式CDNを使用 -->
-    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-    <!-- 映像描画バグを回避するため、安定版のCDNを使用 -->
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/ar-js.min.js"></script>
+    <title>飛ぶ灯籠 AR | 動作確認済み最終版</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
+    <!-- 動作が確認された、旧バージョンのライブラリ構成を使用 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/1.2.0/aframe.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ar.js/2.2.2/aframe-ar.min.js"></script>
+
     <style>
-        /* ページ全体の設定 */
         body { 
             margin: 0px; 
             overflow: hidden; 
             font-family: 'Inter', sans-serif;
-            background-color: #f0f0f0; /* カメラ未起動時は薄い灰色 */
         }
-        
-        /* ユーザー向けのメッセージボックスのスタイル */
-        .info-box {
+
+        /* 画面中央にメッセージを表示するためのスタイル */
+        #ar-message {
             position: fixed;
             top: 15px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 1000;
             background: rgba(45, 45, 45, 0.85);
-            padding: 12px 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            padding: 10px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             color: #ffffff;
-            font-size: 15px;
+            font-size: 14px;
             text-align: center;
             backdrop-filter: blur(5px);
-            display: none; /* 初期は非表示 */
-        }
-        
-        /* スタートボタンのスタイル */
-        #startButton {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 2000;
-            padding: 15px 30px;
-            font-size: 20px;
-            background-color: #4ade80; /* 緑 */
-            color: #1f2937;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            transition: all 0.2s;
-        }
-        #startButton:hover {
-            background-color: #22c55e;
-            transform: translate(-50%, -50%) scale(1.05);
         }
     </style>
 </head>
-<body>
-
+<body style="margin : 0px; overflow: hidden;">
+    
     <!-- ユーザーへの説明メッセージ -->
-    <div id="ar-message" class="info-box">
+    <div id="ar-message">
         <p>💡 **QRコードマーカー**をカメラにかざしてください。</p>
         <p>マーカーの上に**飛ぶ灯籠**がゆらゆらと現れます。</p>
     </div>
 
-    <!-- カメラ起動ボタン -->
-    <button id="startButton">🚀 START AR (カメラを起動)</button>
-
-    <!-- ARシーンの定義 - 描画互換性を強制する属性を追加 -->
-    <a-scene id="ar-scene" embedded
-        renderer="logarithmicDepthBuffer: true"
-        cursor="rayOrigin: mouse" raycaster="objects: [a-entity]" 
-        arjs='sourceType: webcam; trackingMethod: best; debugUIEnabled: false; videoTexture: true; rawWebglContext: true; deviceOrientationControls: false;'
-        vr-mode-ui="enabled: false">
+    <!-- ARシーンの定義 (arjs属性で自動起動) -->
+    <a-scene embedded arjs='sourceType: webcam; trackingMethod: best; debugUIEnabled: false; detectionMode: mono_and_matrix; patternRatio: 0.5;'>
         
         <!-- カスタムパターンマーカーの定義 (marker.pattを使用) -->
         <a-marker type='pattern' url='./marker.patt'> 
@@ -101,59 +70,10 @@
             </a-entity>
         </a-marker>
 
+        <!-- カメラとライトの設定 -->
         <a-entity camera></a-entity>
         <a-light type="directional" color="#FFF" intensity="1" position="-0.5 1 1"></a-light>
         <a-light type="ambient" color="#BBB"></a-light>
     </a-scene>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const startButton = document.getElementById('startButton');
-            const arScene = document.getElementById('ar-scene');
-            const arMessage = document.getElementById('ar-message');
-            
-            // 初回アクセス時にカメラ許可を要求し、ARを起動する
-            function startAR() {
-                // カメラの権限を要求する
-                navigator.mediaDevices.getUserMedia({ video: true })
-                    .then(() => {
-                        // 権限が許可されたら、AR.jsの初期化を強制実行
-                        // ここでvideoTexture: trueを再設定することで描画を促す
-                        arScene.setAttribute('arjs', 'sourceType: webcam; trackingMethod: best; debugUIEnabled: false; videoTexture: true; rawWebglContext: true; deviceOrientationControls: false;');
-                        
-                        // AR.jsの内部初期化関数を呼び出し、レンダリングを強制する
-                        if (arScene.initAR) {
-                             arScene.initAR();
-                        }
-
-                        // ボタンと背景を非表示/透明化
-                        startButton.style.display = 'none';
-                        arMessage.style.display = 'block';
-                        document.body.style.backgroundColor = 'transparent'; 
-                        
-                        console.log("AR.js manually started with final fixes.");
-                    })
-                    .catch(err => {
-                        // 権限が拒否された、またはエラーが発生した場合
-                        const errorMessage = "カメラの起動に失敗しました。\nブラウザの設定でカメラへのアクセスを許可してください。\nエラー: " + err.name;
-                        console.error("Camera access failed:", err);
-                        
-                        // 画面上にエラーメッセージを表示する（alertの代替）
-                        arMessage.innerHTML = `<p style="color: #ff5555; font-weight: bold;">⚠️ エラー発生</p><p>${errorMessage}</p>`;
-                        arMessage.style.display = 'block';
-                        startButton.style.display = 'none';
-                    });
-            }
-
-            // ボタンクリックでARを起動
-            startButton.addEventListener('click', startAR);
-
-            // シーンの読み込み完了時にAR.jsの自動起動を防ぐ
-            arScene.addEventListener('loaded', () => {
-                // AR.jsの自動起動を防ぐため、初期はvideoTextureをfalseにしておく
-                arScene.setAttribute('arjs', 'sourceType: webcam; trackingMethod: best; debugUIEnabled: false; videoTexture: false; rawWebglContext: true; deviceOrientationControls: false;');
-            });
-        });
-    </script>
 </body>
 </html>
