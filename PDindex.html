@@ -3,9 +3,7 @@
 <head>
     <title>飛ぶ灯籠 AR | カスタムQRマーカー</title>
     <!-- A-FrameとAR.jsのライブラリを読み込む -->
-    <!-- A-Frame (3D/VRフレームワーク) -->
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-    <!-- AR.js (A-FrameベースのAR拡張) -->
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/ar-js.min.js"></script>
     
     <style>
@@ -13,7 +11,7 @@
         body { 
             margin: 0px; 
             overflow: hidden; 
-            font-family: 'Inter', sans-serif; /* フォント設定 */
+            font-family: 'Inter', sans-serif;
         }
         
         /* ユーザー向けのメッセージボックスのスタイル */
@@ -23,11 +21,11 @@
             left: 50%;
             transform: translateX(-50%);
             z-index: 1000;
-            background: rgba(45, 45, 45, 0.85); /* 暗めの背景 */
+            background: rgba(45, 45, 45, 0.85);
             padding: 12px 25px;
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            color: #ffffff; /* 白い文字 */
+            color: #ffffff;
             font-size: 15px;
             text-align: center;
             backdrop-filter: blur(5px);
@@ -36,7 +34,7 @@
             margin: 5px 0;
         }
         .info-box strong {
-            color: #4ade80; /* 緑色の強調文字 */
+            color: #4ade80;
         }
     </style>
 </head>
@@ -44,8 +42,8 @@
 
     <!-- ユーザーへの説明メッセージ -->
     <div class="info-box">
-        <p>💡 **QRコードマーカー**をカメラにかざしてください。</p>
-        <p>マーカーの上に**飛ぶ灯籠**がゆらゆらと現れます。</p>
+        <p>💡 <strong>QRコードマーカー</strong>をカメラにかざしてください。</p>
+        <p>マーカーの上に<strong>飛ぶ灯籠</strong>がゆらゆらと現れます。</p>
     </div>
 
     <!-- ARシーンの定義 -->
@@ -56,37 +54,35 @@
         <!-- marker.pattファイルを読み込みます。ファイル名は必ずmarker.pattに合わせてください。 -->
         <a-marker type='pattern' url='./marker.patt'> 
             
-            <!-- 3Dモデル (PD灯ろう1.glb) を表示するエンティティ -->
+            <!-- 3Dモデル (PD灯ろう1.glbから lantern.glb に変更) を表示するエンティティ -->
             <a-entity
-                gltf-model="./PD灯ろう1.glb"  <!-- ★ 3Dモデルファイルへのパス ★ -->
-                scale="0.5 0.5 0.5"           <!-- サイズ調整 (必要に応じて変更) -->
-                position="0 0 0"              <!-- 位置 (マーカーの中心) -->
-                rotation="-90 0 0"            <!-- 向き調整 (Blenderモデルは-90度回転が必要なことが多い) -->
+                gltf-model="./lantern.glb"  <!-- ★ パスを lantern.glb に変更 ★ -->
+                scale="0.5 0.5 0.5"
+                position="0 0 0"
+                rotation="-90 0 0"
                 
                 <!-- Y軸（上下）の浮遊アニメーション -->
                 animation__y="
                     property: position;      
-                    to: 0 0.2 0;             /* Y軸を0mから0.2mまで動かす */
-                    dir: alternate;          /* 往復させる */
-                    dur: 4000;               /* 4秒かけて動く */
-                    easing: easeInOutQuad;   /* 滑らかな動き */
-                    loop: true"              /* 繰り返し */
+                    to: 0 0.2 0;
+                    dir: alternate;
+                    dur: 4000;
+                    easing: easeInOutQuad;
+                    loop: true"
                 
                 <!-- 回転（ゆらゆら感）アニメーション -->
                 animation__rot="
-                    property: rotation;      
-                    to: -90 10 -5;           /* 回転をわずかに変化させる */
+                    property: rotation;
+                    to: -90 10 -5;
                     dir: alternate;
-                    dur: 6000;               
+                    dur: 6000;
                     easing: easeInOutSine;
                     loop: true">
             </a-entity>
         </a-marker>
 
-        <!-- カメラの定義 (必須) -->
+        <!-- カメラとライトの定義 -->
         <a-entity camera></a-entity>
-        
-        <!-- ライトの定義 (3Dモデルを明るく照らすため) -->
         <a-light type="directional" color="#FFF" intensity="1" position="-0.5 1 1"></a-light>
         <a-light type="ambient" color="#BBB"></a-light>
     </a-scene>
