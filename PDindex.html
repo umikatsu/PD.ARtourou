@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>飛ぶ灯籠 AR | 起動成功バージョン (最終安定版)</title>
-    <!-- 安定性が最も高いAR.jsの公式CDNに戻し、描画バグを回避 -->
+    <!-- 安定性が最も高いAR.jsの公式CDNを使用 -->
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/ar-js.min.js"></script>
     
@@ -67,9 +67,10 @@
     <!-- カメラ起動ボタン -->
     <button id="startButton">🚀 START AR (カメラを起動)</button>
 
-    <!-- ARシーンの定義 - 描画エラー回避のためのrenderer属性を追加 -->
+    <!-- ARシーンの定義 - 描画エラー回避のためのrendererとWebXR互換属性を追加 -->
     <a-scene id="ar-scene" embedded
         renderer="logarithmicDepthBuffer: true"
+        cursor="rayOrigin: mouse" raycaster="objects: [a-entity]" 
         arjs='sourceType: webcam; trackingMethod: best; debugUIEnabled: false;'
         vr-mode-ui="enabled: false">
         
