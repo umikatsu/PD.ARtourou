@@ -1,79 +1,76 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>飛ぶ灯籠 AR | 動作確認済み最終版</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- 動作が確認された、旧バージョンのライブラリ構成を使用 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/1.2.0/aframe.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ar.js/2.2.2/aframe-ar.min.js"></script>
+  <title>飛ぶ灯籠 AR | GitHub Pages版</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
-        body { 
-            margin: 0px; 
-            overflow: hidden; 
-            font-family: 'Inter', sans-serif;
-        }
+  <!-- ライブラリ -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/1.2.0/aframe.min.js"></script>
+  <script src="https://cdn.rawgit.com/AR-js-org/AR.js/3.3.2/aframe/build/aframe-ar.min.js"></script>
 
-        /* 画面中央にメッセージを表示するためのスタイル */
-        #ar-message {
-            position: fixed;
-            top: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-            background: rgba(45, 45, 45, 0.85);
-            padding: 10px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            color: #ffffff;
-            font-size: 14px;
-            text-align: center;
-            backdrop-filter: blur(5px);
-        }
-    </style>
+  <style>
+    body { 
+      margin: 0; 
+      overflow: hidden; 
+      font-family: sans-serif;
+    }
+    #ar-message {
+      position: fixed;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      background: rgba(45, 45, 45, 0.85);
+      padding: 10px 20px;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 14px;
+      text-align: center;
+    }
+  </style>
 </head>
-<body style="margin : 0px; overflow: hidden;">
+<body>
+  <!-- ユーザーへの説明メッセージ -->
+  <div id="ar-message">
+    <p>📷 マーカーをカメラにかざしてください</p>
+    <p>✨ 灯籠が浮かび上がります</p>
+  </div>
+
+  <!-- ARシーン -->
+  <a-scene
+    embedded
+    arjs="sourceType: webcam; debugUIEnabled: false;">
     
-    <!-- ユーザーへの説明メッセージ -->
-    <div id="ar-message">
-        <p>💡 **QRコードマーカー**をカメラにかざしてください。</p>
-        <p>マーカーの上に**飛ぶ灯籠**がゆらゆらと現れます。</p>
-    </div>
+    <!-- カスタムパターンマーカー -->
+    <a-marker type="pattern" url="marker.patt">
+      <a-entity
+        gltf-model="lantern.glb"
+        scale="0.5 0.5 0.5"
+        position="0 0 0"
+        rotation="-90 0 0"
 
-    <!-- ARシーンの定義 (arjs属性で自動起動) -->
-    <a-scene embedded arjs='sourceType: webcam; trackingMethod: best; debugUIEnabled: false; detectionMode: mono_and_matrix; patternRatio: 0.5;'>
+        animation__float="
+          property: position;
+          to: 0 0.2 0;
+          dir: alternate;
+          dur: 4000;
+          easing: easeInOutQuad;
+          loop: true"
         
-        <!-- カスタムパターンマーカーの定義 (marker.pattを使用) -->
-        <a-marker type='pattern' url='./marker.patt'> 
-            <a-entity
-                gltf-model="./lantern.glb"
-                scale="0.5 0.5 0.5"
-                position="0 0 0"
-                rotation="-90 0 0"
-                
-                animation__y="
-                    property: position;      
-                    to: 0 0.2 0;
-                    dir: alternate;
-                    dur: 4000;
-                    easing: easeInOutQuad;
-                    loop: true"
-                
-                animation__rot="
-                    property: rotation;
-                    to: -90 10 -5;
-                    dir: alternate;
-                    dur: 6000;
-                    easing: easeInOutSine;
-                    loop: true">
-            </a-entity>
-        </a-marker>
+        animation__rotate="
+          property: rotation;
+          to: -90 10 -5;
+          dir: alternate;
+          dur: 6000;
+          easing: easeInOutSine;
+          loop: true">
+      </a-entity>
+    </a-marker>
 
-        <!-- カメラとライトの設定 -->
-        <a-entity camera></a-entity>
-        <a-light type="directional" color="#FFF" intensity="1" position="-0.5 1 1"></a-light>
-        <a-light type="ambient" color="#BBB"></a-light>
-    </a-scene>
+    <!-- カメラとライト -->
+    <a-entity camera></a-entity>
+    <a-light type="directional" color="#FFF" intensity="1" position="-0.5 1 1"></a-light>
+    <a-light type="ambient" color="#BBB"></a-light>
+  </a-scene>
 </body>
 </html>
