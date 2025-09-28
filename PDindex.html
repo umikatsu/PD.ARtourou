@@ -4,6 +4,7 @@
     <title>飛ぶ灯籠 AR | 起動成功バージョン (最終安定版)</title>
     <!-- 安定性が最も高いAR.jsの公式CDNを使用 -->
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <!-- 映像描画バグを回避するため、安定版のCDNを使用 -->
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/ar-js.min.js"></script>
     
     <style>
@@ -67,11 +68,11 @@
     <!-- カメラ起動ボタン -->
     <button id="startButton">🚀 START AR (カメラを起動)</button>
 
-    <!-- ARシーンの定義 - 描画エラー回避のためのrendererとWebXR互換属性を追加 -->
+    <!-- ARシーンの定義 - 描画互換性を強制する属性を追加 -->
     <a-scene id="ar-scene" embedded
         renderer="logarithmicDepthBuffer: true"
         cursor="rayOrigin: mouse" raycaster="objects: [a-entity]" 
-        arjs='sourceType: webcam; trackingMethod: best; debugUIEnabled: false;'
+        arjs='sourceType: webcam; trackingMethod: best; debugUIEnabled: false; videoTexture: true; rawWebglContext: true; deviceOrientationControls: false;'
         vr-mode-ui="enabled: false">
         
         <!-- カスタムパターンマーカーの定義 (marker.pattを使用) -->
@@ -117,7 +118,8 @@
                 navigator.mediaDevices.getUserMedia({ video: true })
                     .then(() => {
                         // 権限が許可されたら、AR.jsの初期化を強制実行
-                        arScene.setAttribute('arjs', 'sourceType: webcam; trackingMethod: best; debugUIEnabled: false; videoTexture: true;');
+                        // ここでvideoTexture: trueを再設定することで描画を促す
+                        arScene.setAttribute('arjs', 'sourceType: webcam; trackingMethod: best; debugUIEnabled: false; videoTexture: true; rawWebglContext: true; deviceOrientationControls: false;');
                         
                         // AR.jsの内部初期化関数を呼び出し、レンダリングを強制する
                         if (arScene.initAR) {
@@ -129,7 +131,7 @@
                         arMessage.style.display = 'block';
                         document.body.style.backgroundColor = 'transparent'; 
                         
-                        console.log("AR.js manually started.");
+                        console.log("AR.js manually started with final fixes.");
                     })
                     .catch(err => {
                         // 権限が拒否された、またはエラーが発生した場合
@@ -149,7 +151,7 @@
             // シーンの読み込み完了時にAR.jsの自動起動を防ぐ
             arScene.addEventListener('loaded', () => {
                 // AR.jsの自動起動を防ぐため、初期はvideoTextureをfalseにしておく
-                arScene.setAttribute('arjs', 'sourceType: webcam; trackingMethod: best; debugUIEnabled: false; videoTexture: false;');
+                arScene.setAttribute('arjs', 'sourceType: webcam; trackingMethod: best; debugUIEnabled: false; videoTexture: false; rawWebglContext: true; deviceOrientationControls: false;');
             });
         });
     </script>
