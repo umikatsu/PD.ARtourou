@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>飛ぶ灯籠 AR | 手動スタート</title>
+    <title>飛ぶ灯籠 AR | 起動成功バージョン</title>
     <!-- A-FrameとAR.jsのライブラリを読み込む -->
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/ar-js.min.js"></script>
@@ -60,8 +60,8 @@
 
     <!-- ユーザーへの説明メッセージ -->
     <div id="ar-message" class="info-box">
-        <p>💡 <strong>QRコードマーカー</strong>をカメラにかざしてください。</p>
-        <p>マーカーの上に<strong>飛ぶ灯籠</strong>がゆらゆらと現れます。</p>
+        <p>💡 **QRコードマーカー**をカメラにかざしてください。</p>
+        <p>マーカーの上に**飛ぶ灯籠**がゆらゆらと現れます。</p>
     </div>
 
     <!-- カメラ起動ボタン -->
@@ -72,7 +72,7 @@
         arjs='sourceType: webcam; trackingMethod: best; debugUIEnabled: false;'
         vr-mode-ui="enabled: false">
         
-        <!-- カスタムパターンマーカーの定義 -->
+        <!-- カスタムパターンマーカーの定義 (marker.pattを使用) -->
         <a-marker type='pattern' url='./marker.patt'> 
             <a-entity
                 gltf-model="./lantern.glb"
@@ -108,14 +108,14 @@
             const startButton = document.getElementById('startButton');
             const arScene = document.getElementById('ar-scene');
             const arMessage = document.getElementById('ar-message');
-
-            // AR.jsがカメラ初期化を始める関数
+            
+            // 初回アクセス時にカメラ許可を要求し、ARを起動する
             function startAR() {
                 // カメラの権限を要求する
                 navigator.mediaDevices.getUserMedia({ video: true })
                     .then(() => {
                         // 権限が許可されたら、AR.jsの初期化を強制実行
-                        arScene.setAttribute('arjs', 'sourceType: webcam; trackingMethod: best; debugUIEnabled: false;');
+                        arScene.setAttribute('arjs', 'sourceType: webcam; trackingMethod: best; debugUIEnabled: false; videoTexture: true;');
                         
                         // ボタンと背景を非表示/透明化
                         startButton.style.display = 'none';
@@ -126,17 +126,22 @@
                     })
                     .catch(err => {
                         // 権限が拒否された、またはエラーが発生した場合
-                        alert("カメラの起動に失敗しました。\nブラウザの設定でカメラへのアクセスを許可してください。\nエラー: " + err.name);
+                        const errorMessage = "カメラの起動に失敗しました。\nブラウザの設定でカメラへのアクセスを許可してください。\nエラー: " + err.name;
                         console.error("Camera access failed:", err);
+                        
+                        // 画面上にエラーメッセージを表示する（alertの代替）
+                        arMessage.innerHTML = `<p style="color: #ff5555; font-weight: bold;">⚠️ エラー発生</p><p>${errorMessage}</p>`;
+                        arMessage.style.display = 'block';
+                        startButton.style.display = 'none';
                     });
             }
 
             // ボタンクリックでARを起動
             startButton.addEventListener('click', startAR);
 
-            // シーンの読み込み完了時にボタンを有効にする
+            // シーンの読み込み完了時にAR.jsの自動起動を防ぐ
             arScene.addEventListener('loaded', () => {
-                // AR.jsの自動起動を防ぐため、初期はarjsコンポーネントを無効化
+                // AR.jsの自動起動を防ぐため、初期はvideoTextureをfalseにしておく
                 arScene.setAttribute('arjs', 'sourceType: webcam; trackingMethod: best; debugUIEnabled: false; videoTexture: false;');
             });
         });
