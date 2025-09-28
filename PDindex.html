@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>飛ぶ灯籠 AR | 起動成功バージョン</title>
-    <!-- A-FrameとAR.jsのライブラリを最新のCDNに切り替える -->
+    <title>飛ぶ灯籠 AR | 起動成功バージョン (最終安定版)</title>
+    <!-- 安定性が最も高いAR.jsの公式CDNに戻し、描画バグを回避 -->
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-    <script src="https://unpkg.com/aframe-ar/dist/aframe-ar.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/ar-js.min.js"></script>
     
     <style>
         /* ページ全体の設定 */
@@ -67,8 +67,9 @@
     <!-- カメラ起動ボタン -->
     <button id="startButton">🚀 START AR (カメラを起動)</button>
 
-    <!-- ARシーンの定義 - 初期はカメラ自動起動を無効に -->
+    <!-- ARシーンの定義 - 描画エラー回避のためのrenderer属性を追加 -->
     <a-scene id="ar-scene" embedded
+        renderer="logarithmicDepthBuffer: true"
         arjs='sourceType: webcam; trackingMethod: best; debugUIEnabled: false;'
         vr-mode-ui="enabled: false">
         
@@ -117,6 +118,11 @@
                         // 権限が許可されたら、AR.jsの初期化を強制実行
                         arScene.setAttribute('arjs', 'sourceType: webcam; trackingMethod: best; debugUIEnabled: false; videoTexture: true;');
                         
+                        // AR.jsの内部初期化関数を呼び出し、レンダリングを強制する
+                        if (arScene.initAR) {
+                             arScene.initAR();
+                        }
+
                         // ボタンと背景を非表示/透明化
                         startButton.style.display = 'none';
                         arMessage.style.display = 'block';
